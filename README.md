@@ -1,8 +1,6 @@
 # xCPS: Covariant Phase Space for xAct
 
-[![License: GPL](https://img.shields.io/badge/License-GPL-blue.svg)](LICENSE)
-
-[![xAct](https://img.shields.io/badge/xAct-compatible-green.svg)](http://www.xact.es/)
+[![License: GPL](https://img.shields.io/badge/License-GPL-blue.svg)](LICENSE) [![xAct](https://img.shields.io/badge/xAct-compatible-green.svg)](http://www.xact.es/)
 
 **xCPS** is a [Mathematica](https://www.wolfram.com/mathematica/) package that implements the **Covariant Phase Space (CPS)** formalism for field theories within the [xAct](http://www.xact.es/) tensor algebra suite.
 
