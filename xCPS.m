@@ -1334,7 +1334,7 @@ VertLie[c_?ConstantQ vvf1_][expr_]:=c VertLie[vvf1][expr]
 
 
 (* ::Subsection:: *)
-(*2.4.5. Definition certical Lie bracket (VertBracket)*)
+(*2.4.5. Definition vertical Lie bracket (VertBracket)*)
 
 
 VertDeg[VertBracket[vvf1_,vvf2_]]:=VertDeg[vvf1]+VertDeg[vvf2]
