@@ -45,7 +45,7 @@
 
 
 (* ::Input::Initialization:: *)
-xAct`xCPS`$Version={"1.0.0",{2025,30,12}};
+xAct`xCPS`$Version={"1.0.1",{2025,31,12}};
 xAct`xCPS`$xTensorVersionExpected={"1.1.4",{2020,2,16}};
 
 
@@ -60,7 +60,7 @@ xAct`xCPS`$xTensorVersionExpected={"1.1.4",{2020,2,16}};
 (* ::Input::Initialization:: *)
 (* xCPS: Covariant Phase Space Formalism in Field Theories *)
 
-(* Copyright ??? (C) ??? Juan Margalef-Bentabol, Laura S\[AAcute]nchez Cotta *)
+(* Copyright 2025 (C) Juan Margalef-Bentabol, Laura S\[AAcute]nchez Cotta *)
 
 (* This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
  published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
@@ -94,7 +94,7 @@ You should have received a copy of the GNU General Public License along with thi
   
 (* :Context: xAct`xCPS` *)
 
-(* :Package Version: 1.0.0 *)
+(* :Package Version: 1 *)
 
 (* :Copyright: Juan Margalef-Bentabol and Laura S\[AAcute]nchez Cotta (2025) *)
 
@@ -157,7 +157,7 @@ If[Not@OrderedQ@Map[Last,{xAct`xCPS`$xTensorVersionExpected,xAct`xTensor`$Versio
 (* ::Input::Initialization:: *)
 Print[xAct`xCore`Private`bars];
 Print["Package xAct`xCPS` version ",$Version[[1]],", ",$Version[[2]]];
-Print["CopyRight (C) ???, Juan Margalef-Bentabol and Laura S\[AAcute]nchez Cotta, under the General Public License."];
+Print["CopyRight (C) 2025, Juan Margalef-Bentabol and Laura S\[AAcute]nchez Cotta, under the General Public License."];
 
 
 (* ::Text:: *)
@@ -1082,37 +1082,8 @@ xAct`xTensor`Private`makeChangeRicciScalarRule[covd2_,metricofcovd1_][covd1_]:=W
 ];
 
 
-(* ::Section:: *)
-(*2.4. Things that (I think) should be fixed on xAct*)
-
-
-(* ::Input:: *)
-(*(* Several messages contain two spaces: *)*)
-(**)
-(*(* ** DefCovD:  Computing RiemannToWeylRules for dim *)*)
-(*(* ** DefCovD:  Computing RicciToTFRicci for dim *)*)
-(*(* ** DefCovD:  Computing RicciToEinsteinRules" *)*)
-(*(* ** DefCovD:  Contractions of Ricci automatically replaced by RicciScalar. *)*)
-(*(* Print["Package xAct`xTensor`  version ",xAct`xTensor`$Version[[1]],", ",xAct`xTensor`$Version[[2]]]; *)*)
-
-
 (* ::Subsection:: *)
-(*2.4.1. Modifications to changeRiemann*)
-
-
-(* It uses the VBundle metric even for Riemann *)
-xAct`xTensor`Private`changeRiemann[covd1_,covd2_,{tmetric_,vmetric_,vdagmetric_},riemann_][c_,d_,b_,a_]:=With[
-	{
-	vbundle=VBundleOfIndex[a],
-	tbundle=VBundleOfIndex[c],
-	vdmetric=If[riemann===FRiemann&&HasDaggerCharacterQ[riemann],vdagmetric,If[riemann===FRiemann,vmetric,tmetric]]
-	},
-	Module[{c1=DummyIn[tbundle],d1=DummyIn[tbundle],b1=DummyIn[vbundle],a1=DummyIn[vbundle]},
-	tmetric[c,c1]tmetric[d,d1]vdmetric[b,b1]vdmetric[a,-a1]xAct`xTensor`Private`changeRiemann[covd1,covd2,{delta,delta,delta},riemann][-c1,-d1,-b1,a1]]];
-
-
-(* ::Subsection:: *)
-(*2.4.2. Modifications to Keep (ToCanonical and FindIndices)*)
+(*2.3.17. Modifications to Keep (ToCanonical and FindIndices)*)
 
 
 (* TODO: Is this a good idea? It allows to handle Keep betten within xAct *)
@@ -1128,7 +1099,7 @@ Protect[ToCanonical,Keep,FindIndices,SymmetryOf];
 
 
 (* ::Subsection:: *)
-(*2.4.3. Modification to Grade (for InertHeads)*)
+(*2.3.18. Modification to Grade (for InertHeads)*)
 
 
 Unprotect[Grade];
@@ -1145,421 +1116,12 @@ Grade[xAct`xTensor`Private`expr_,xAct`xTensor`Private`prod_?ProductQ]:=0
 Protect \.08[Grade];
 
 
-(* ::Subsection:: *)
-(*2.4.4. Modifications to movedindices*)
-
-
-(* This solves a problem in xAct with LieD *)
-xAct`xTensor`Private`movedindices[LieD[_][expr_]] :=xAct`xTensor`Private`movedindices[expr]
-
-
-(* ::Subsection:: *)
-(*2.4.5. Modifications to PrintAs*)
-
-
-(* This solves a problem in xAct that appears when imploding tensors with several parameters: Implode[ParamD[t1,t2][tensor[inds]]] *)
-Unprotect[PrintAs];
-Quiet[PrintAs[_,x__]=.];
-SetNumberOfArguments[PrintAs,{1,Infinity}]
-PrintAs[several__]:=StringJoin@@PrintAs/@{several}
-Protect[PrintAs];
-
-
-(* ::Subsection:: *)
-(*2.4.6. Modifications to UndefManifold*)
-
-
-Unprotect@UndefManifold;
-UndefManifold[manifold_]=.
-UndefManifold[manifold_]:=Catch@With[{servants=ServantsOf[manifold]},
-	(* Checks *)
-	If[Not@MatchQ[manifold,_Symbol],Throw@Message[UndefManifold::error,"Only symbols can be undefined."]];
-	If[Not@ManifoldQ[manifold],Throw@Message[UndefManifold::unknown,"manifold",manifold]];
-	MakexTensions[UndefManifold,"Beginning",manifold]; (* This has to be before CheckRemoveSymbol *)
-	xAct`xTensor`Private`CheckRemoveSymbol[manifold];
-	xUpSet[ServantsOf[manifold],{}];
-	xAct`xTensor`Private`DropFromHosts[manifold];
-	(* Undefine servants, including the tangent bundle *)
-	Undef/@Reverse[servants];
-	$Manifolds=DeleteCases[$Manifolds,manifold];
-	$ProductManifolds=DeleteCases[$ProductManifolds,manifold];
-	MakexTensions[UndefManifold,"End",manifold];
-	(* Eliminate symbol *)
-	xAct`xTensor`Private`MakeUndefInfo[UndefManifold,manifold];
-	xAct`xTensor`Private`RemoveSymbol[manifold];
-];
-Unprotect@UndefManifold;
-
-
-(* ::Subsection:: *)
-(*2.4.7. Modifications to Determinant*)
-
-
-(* ::Input::Initialization:: *)
-Unprotect@Determinant
-
-Determinant[metric_][]:=Determinant[metric,AIndex][];
-Determinant[metric_,basis_?BasisQ][]:=With[{
-cd=CovDOfMetric[metric],
-dmb=GiveSymbol[Determinant,metric,basis],
-vbundle=VBundleOfMetric[metric],
-invmetric=Inv[metric],
-dagger=If[DaggerQ[metric],Complex,Real]},(* ADDED *)
-(* Define tensor *)
-DefTensor[dmb[],Union[DependenciesOfTensor[metric],xAct`xCoba`DependenciesOfBasis[basis]],WeightOfTensor->2basis,Master->metric,PrintAs:>GiveOutputString[Determinant,metric,basis],DefInfo:>If[$DefInfoQ===False,False,{"weight +2 density","Determinant."}],TensorID->{Determinant,metric,basis},ProtectNewSymbol->False,Dagger->dagger];(* ADDED *)
-(* Derivatives of the determinant *)
-If[TangentBundleQ[vbundle],
-If[WeightedWithBasis[cd]===basis,
-cd[a_][dmb[]]^:=0;
-dmb/:TensorDerivative[dmb,cd,___]:=Zero]
-];
-der_?FirstDerQ[dmb[]]^:=dmb[]Module[{b1=DummyIn[vbundle],c1=DummyIn[vbundle]},invmetric[b1,c1]der[metric[-b1,-c1]]];
-dmb/:TensorDerivative[dmb,covd_?CovDQ]:=Function[{ind},dmb[]Module[{b1=DummyIn[vbundle],c1=DummyIn[vbundle]},invmetric[b1,c1]TensorDerivative[metric,covd][-b1,-c1,ind]]];
-(* Variational derivatives of the determinant *)
-dmb/:VarD[invmetric[a_Symbol,b_Symbol],PD][dmb[],rest_]:=-rest metric[-a,-b]dmb[];dmb/:VarD[metric[-a_Symbol,-b_Symbol],PD][dmb[],rest_]:=rest invmetric[a,b]dmb[];
-
-(* Remember result *)
-xTagSet[{metric,Determinant[metric,basis]},dmb];
-If[DaggerQ[metric], (* ADDED *)
-With[{daggermetric=Dagger@metric,daggerdmb=Dagger@dmb,invdaggermetric=Inv[Dagger@metric]},
-	xTagSet[{daggermetric,Determinant[daggermetric,basis]},daggerdmb];
-	daggerdmb/:VarD[invdaggermetric[a_Symbol,b_Symbol],PD][daggerdmb[],rest_]:=-rest daggermetric[-a,-b]daggerdmb=Dagger@dmb[];
-	daggerdmb/:VarD[daggermetric[-a_Symbol,-b_Symbol],PD][daggerdmb[],rest_]:=rest invdaggermetric[a,b]daggerdmb[];
-	]
-];
-dmb[]
-];
-Protect[Determinant];
-
-
-(* ::Subsection:: *)
-(*2.4.8. Modifications to DefMetric*)
-
-
-(* ::Input:: *)
-(*(* DefMetric does not handle properly complex metrics. Some changes needed to be done. *)*)
-
-
-Unprotect@DefMetric;
-
-Options[DefMetric]=Options[DefMetric]~Join~{Dagger->Real}; (* To allow to properly handle complex metrics *)
-
-dv = DownValues[DefMetric];
-
-(* Swap the 3rd and 4th rules, this allows to define metrics on VBundles with options (otherwise assumes that the options are the name of the CovD and throws an error since no CovD is allowed on VBundle metrics ) *)
-dv[[{3, 4}]] = dv[[{4, 3}]];
-
-DownValues[DefMetric] = dv;
-
-DefMetric[signdet_,metric_[-ind1_,-ind2_],covd_,options:OptionsPattern[]]:=Catch@With[{vbundle=VBundleOfIndex[ind1]},
-	
-	Module[{tangentmetricQ,covdsymbol,flat,inducedfrom,confto,odeps,wwb,eoib,pns,info,flatPD,inducedQ,dim,integerdimQ,frozenQ,firstQ,invertQ,firstmetric,supermetric,vector,LCmetric,dagger,daggermetric}, (* dagger added *)
-	
-		(* Options and checks *)
-		{covdsymbol,flat,inducedfrom,confto,odeps,wwb,eoib,pns,info,dagger}=OptionValue[{DefMetric,DefCovD},{options},{SymbolOfCovD,FlatMetric,InducedFrom,ConformalTo,OtherDependencies,WeightedWithBasis,epsilonOrientationInBasis,ProtectNewSymbol,DefInfo,Dagger}];
-		
-		xAct`xTensor`Private`DefMetricCheck[signdet,metric[-ind1,-ind2],covd,covdsymbol,flat,inducedfrom,confto,odeps,wwb,eoib]; (* I guess this should also be changed to check for complex indices *)
-		
-		(* Explore *)
-		tangentmetricQ=SameQ[Tangent[BaseOfVBundle@vbundle],vbundle];
-		flatPD=flat&&(covd===PD);
-		dim=DimOfVBundle[vbundle];
-		integerdimQ=IntegerQ[dim];
-		(* One and only one of firstQ, inducedQ, frozenQ is True, and the other two are False *)
-		firstQ=MetricsOfVBundle[vbundle]==={};
-		inducedQ=And[!firstQ,inducedfrom=!=Null];
-		frozenQ=And[!firstQ,!inducedQ];
-		If[inducedQ,{supermetric,vector}=inducedfrom];
-		If[frozenQ,firstmetric=First[MetricsOfVBundle[vbundle]]];
-		
-		With[
-			{
-			manifold=BaseOfVBundle[vbundle],
-			deps=Union[{BaseOfVBundle[vbundle]},odeps],
-			vbQ=xAct`xTensor`Private`VBundleIndexQ[vbundle],
-			vbpmQ=xAct`xTensor`Private`VBundleIndexPMQ[vbundle],
-			invmetric=If[frozenQ,GiveSymbol[Inv,metric],metric]
-			},
-		
-			(* Avoid messages from options of DefMetric not accepted in DefTensor or DefCovD *)
-			Off[OptionValue::nodef];
-			
-			(* Define metric tensor. Do not protect symbol. Do not use ProjectedWith. It is always symmetric *)
-			DefTensor[metric[-ind1,-ind2],deps,Symmetric[{1,2}],
-				ProtectNewSymbol->False,
-				OrthogonalTo:>If[inducedQ,{vector[ind1]},{}],
-				DefInfo:>If[info===False,False,{"symmetric metric tensor",""}],
-				options];
-			
-			daggermetric=Dagger@metric;
-						
-			MakexTensions[DefMetric,"Beginning",signdet,metric[-ind1,-ind2],covd,options];
-			
-			(* Register structure *)
-			AppendToUnevaluated[$Metrics,metric];
-			MetricQ[metric]^=True;
-			CovDOfMetric[metric]^=covd;
-			VBundleOfMetric[metric]^=vbundle;
-			xUpAppendTo[MetricsOfVBundle[vbundle],metric];
-			FlatMetricQ[metric]^=flat;
-			InducedFrom[metric]^=inducedfrom;
-			
-			 If[DaggerQ[metric], (* ADDED *)
-				(
-				AppendToUnevaluated[$Metrics,daggermetric];
-				MetricQ[daggermetric]^=True;
-				CovDOfMetric[daggermetric]^=covd;
-				VBundleOfMetric[daggermetric]^=Dagger@vbundle;
-				xUpAppendTo[MetricsOfVBundle[Dagger@vbundle],daggermetric];
-				InducedFrom[daggermetric]^=If[inducedfrom==Null,Null,Dagger@inducedfrom];
-				With[{daggermetricAUX=daggermetric},daggermetricAUX/:CovDOfMetric[daggermetric,Zero]=None];
-				)
-			];
-
-			(* Signature *)
-			If[Head[signdet]===List &&Length[signdet]===3,
-				SignatureOfMetric[metric]^=signdet;
-				SignDetOfMetric[metric]^=If[signdet[[3]]===0,(-1)^signdet[[2]],0],
-				SignDetOfMetric[metric]^=signdet;
-			];
-			(* Invertibility *)
-			invertQ=SignDetOfMetric[metric]=!=0;
-			(* Define inverse metric. TODO: Orthogonal and Projected? *)
-			If[invertQ,
-				If[frozenQ,
-					DefTensor[invmetric[ind1,ind2],deps,Symmetric[{1,2}],
-						ProtectNewSymbol->False,
-						Master->metric,
-						DefInfo:>If[info===False,False,{"inverse metric tensor","Metric is frozen!"}],
-						TensorID->{xAct`xTensor`Private`InvMetric,metric},
-						PrintAs:>GiveOutputString[Inv,metric],
-						options],
-					Inv[metric]^=metric
-				],
-				Print["** DefMetric: non-invertible metric being defined! Dangerous!"]
-			];
-			
-			(* Directional indices are not allowed in metrics. Why only for first metrics? *)
-			If[firstQ,
-				metric[Dir[expr_],b_]:=ReplaceIndex[expr,xAct`xTensor`Private`UltraindexOf[expr]->b];
-				metric[a_,Dir[expr_]]:=ReplaceIndex[expr,xAct`xTensor`Private`UltraindexOf[expr]->a];
-			];
-			
-			(* Define epsilon tensor, with covariant indices. Do not protect symbol *)
-			metric/:epsilonOrientation[metric,eoib[[1]]]=eoib[[2]];
-			With[
-				 {
-				 epsilonname=GiveSymbol[epsilon,metric],
-				inds=GetIndicesOfVBundle[vbundle,If[integerdimQ,If[inducedQ,dim-1,dim],2]]
-				 },
-				DefTensor[epsilonname@@(ChangeIndex/@inds),deps,Antisymmetric@Range@Length@inds,
-					PrintAs:>GiveOutputString[epsilon,metric],
-					ProtectNewSymbol->False,
-					Master->metric,
-					OrthogonalTo:>If[inducedQ,{vector[First[inds]]},{}],
-					ProjectedWith:>If[inducedQ,{metric[-DummyIn[vbundle],First[inds]]},{}],
-					DefInfo:>If[info===False,False,{"antisymmetric tensor",""}],
-					TensorID->{epsilon,metric},
-					 Dagger->dagger   (* ADDED! *)
-				];
-				
-				If[Not@integerdimQ && Not@inducedQ,
-					TagSetDelayed[epsilonname,SymmetryGroupOfTensor[epsilonname[inds1__]],Antisymmetric[Range@Length@{inds1}]];
-					TagUnset[epsilonname,SymmetryGroupOfTensor[epsilonname]];
-					TagSetDelayed[epsilonname,SymmetryGroupOfTensor[epsilonname],Antisymmetric[Range@DimOfVBundle@vbundle]]
-				];
-				
-				(* Products of two epsilons. In the induced and frozen cases expansions give metric and not delta *)
-				If[inducedQ ||frozenQ,
-				epsilonname/:epsilonname[inds1__]epsilonname[inds2__]:=SignDetOfMetric[metric]xAct`xTensor`Private`expandGdelta[metric][inds1,inds2],
-				epsilonname/:epsilonname[inds1__]epsilonname[inds2__]:=SignDetOfMetric[metric]ExpandGdelta[Gdelta[inds1,inds2]]
-				];
-				
-				(* Derivatives of epsilon. Note that we have not yet defined covd (!?) *)
-				If[tangentmetricQ,
-					If[frozenQ,
-						covd[a_][epsilonname[(-b_?vbQ)..]]^=0,
-						covd[a_][epsilonname[b__?vbpmQ]]^=0
-					];
-					TensorDerivative[epsilonname,covd,___]:=Zero;
-					If[!inducedQ,
-						If[!frozenQ,
-							epsilonname/:LieD[v_][epsilonname[inds1__?UpIndexQ]]:=Module[{dummy=DummyIn[vbundle]},-covd[-dummy][ReplaceIndex[v,{xAct`xTensor`Private`UltraindexOf[v]->dummy}]epsilonname[inds1]]]
-						];
-						epsilonname/:LieD[v_][epsilonname[inds1__?DownIndexQ]]:=Module[{dummy=DummyIn[vbundle]},covd[-dummy][ReplaceIndex[v,{xAct`xTensor`Private`UltraindexOf[v]->dummy}]epsilonname[inds1]]];
-						epsilonname/:TensorDerivative[epsilonname,LieD[vhead_?xTensorQ[_]]]:=With[{dummy=DummyIn[vbundle]},MultiplyHead[TensorDerivative[vhead,covd][dummy,-dummy],epsilonname]];
-					]
-				];
-				
-				(* Special relation in 2d, valid for all types of indices *)
-				If[dim===2&&firstQ,
-					epsilonname[a_,b_]epsilonname[c_,d_]^=SignDetOfMetric[metric] (metric[a,c]metric[b,d]-metric[a,d]metric[b,c]);
-				];
-				
-				(* Define Tetra, only in dimension 4. This is an algebraic construction, hence valid for frozen metrics *) 
-				If[dim==4,
-				With[{TetraName=GiveSymbol[Tetra,metric]},
-					Module[{i1,i2,i3,i4},
-						{i1,i2,i3,i4}=GetIndicesOfVBundle[vbundle,4];
-						DefTensor[TetraName[-i1,-i2,-i3,-i4],deps,GenSet[xAct`xPerm`Cycles[{1,2},{3,4}],xAct`xPerm`Cycles[{1,3},{2,4}]],
-							Dagger->Complex,
-							PrintAs:>GiveOutputString[Tetra,metric],
-							Master->metric,
-							ProtectNewSymbol->False,
-							DefInfo:>If[info===False,False,{"tetrametric",""}]
-						];
-						TetraRule[metric]^:=MakeRule[{TetraName[i1,i2,i3,i4],I/2epsilonOrientation[metric,AIndex]epsilonname[i1,i2,i3,i4]+metric[i1,i4]metric[i2,i3]/2-metric[i1,i3]metric[i2,i4]/2+metric[i1,i2]metric[i3,i4]/2},Evaluate->True];
-						With[{TetraNamedag=Dagger[TetraName]},
-						TetraNamedag[i1_,i2_,i3_,i4_]:=TetraName[i1,i4,i3,i2]
-						]
-					];
-					If[$ProtectNewSymbols,Protect[TetraName,Evaluate[Dagger@TetraName]]]
-					]
-				];
-				
-				If[$ProtectNewSymbols,Protect[epsilonname]]
-			];
-			
-			(* Self-contractions. Transformation to delta or metric for A-indices contraction of two metrics (this could be generalized). Projectors not automatically converted into delta *)
-			If[frozenQ,
-				invmetric/:metric[a_,-b_?vbQ]invmetric[b_?EIndexQ,c_]:=firstmetric[a,c];
-				invmetric/:metric[-b_?vbQ,a_]invmetric[b_?EIndexQ,c_]:=firstmetric[a,c];
-				invmetric/:metric[a_,-b_?vbQ]invmetric[c_,b_?EIndexQ]:=firstmetric[a,c];
-				invmetric/:metric[-b_?vbQ,a_]invmetric[c_,b_?EIndexQ]:=firstmetric[a,c];
-				invmetric/:metric[a_,b_?vbQ]invmetric[-b_?EIndexQ,c_]:=firstmetric[a,c];
-				invmetric/:metric[b_?vbQ,a_]invmetric[-b_?EIndexQ,c_]:=firstmetric[a,c];
-				invmetric/:metric[a_,b_?vbQ]invmetric[c_,-b_?EIndexQ]:=firstmetric[a,c];
-				invmetric/:metric[b_?vbQ,a_]invmetric[c_,-b_?EIndexQ]:=firstmetric[a,c],
-				If[inducedQ,
-					metric[a_?vbQ,-a_?EIndexQ]:=dim-1;
-					metric[-a_?vbQ,a_?EIndexQ]:=dim-1
-				];
-				If[firstQ,
-					metric[a_?UpIndexQ,b_?DownIndexQ]:=delta[b,a];
-					metric[a_?DownIndexQ,b_?UpIndexQ]:=delta[a,b]
-				];
-				HoldPattern[metric[a_,b_?vbQ]metric[-b_?EIndexQ,c_]]^:=metric[a,c];
-				HoldPattern[metric[a_,b_?vbQ]metric[c_,-b_?EIndexQ]]^:=metric[a,c];
-				HoldPattern[metric[b_?vbQ,a_]metric[-b_?EIndexQ,c_]]^:=metric[a,c];
-				HoldPattern[metric[b_?vbQ,a_]metric[c_,-b_?EIndexQ]]^:=metric[a,c];
-			];
-			
-			(* Define covariant derivative(s). Do not protect symbol *)
-			If[tangentmetricQ,
-				If[flatPD,
-					(* Flat metric with PD. Derivative already defined *)
-					Print["** DefMetric: Associating fiducial flat derivative PD to metric."];
-					Unprotect[PD];
-					MetricOfCovD[PD]^=metric;
-					PD[c_][metric[a_?vbpmQ,b_?vbpmQ]]^=0;
-					metric/:TensorDerivative[metric,PD]:=Zero;
-					If[!frozenQ,
-						(* Place rule for this metric second, after the general rule for lower indices *)
-						AppendTo[xAct`xTensor`Private`$SortPDsRules,PD[b_?vbpmQ][PD[a_?vbpmQ][expr1_]]:>PD[a][PD[b][expr1]]/;DisorderedPairQ[a,b]]
-					],
-					(* Other cases. Define derivative. For a frozen metric the associated tensors are wrong! TODO *)
-					DefCovD[covd[-ind1],covdsymbol,
-						FromMetric->metric,
-						Curvature:>Not[flat],
-						OtherDependencies->odeps,
-						OrthogonalTo:>If[inducedQ,{vector[ind1]},{}],
-						ProjectedWith:>If[inducedQ,{metric[ind1,-ind2]},{}],
-						Master->metric,
-						ProtectNewSymbol->False,
-						DeleteCases[{options},_[PrintAs,_]]
-					]
-				];
-				xAct`xTensor`Private`InducedCovDQ[covd]=inducedQ;
-				(* Torsion. TODO: modify the covdsymbol in the LCmetric *)
-				LCmetric=If[TorsionQ[covd],LC[metric],covd];
-				If[!CovDQ[LCmetric],
-					DefCovD[LCmetric[-ind1],covdsymbol,
-						FromMetric->metric,
-						Torsion->False,
-						Curvature->True,
-						OtherDependencies->odeps,
-						OrthogonalTo:>If[inducedQ,{vector[ind1]},{}],
-						ProjectedWith:>If[inducedQ,{metric[ind1,-ind2]},{}],
-						Master->metric,
-						ProtectNewSymbol->False,
-						DeleteCases[{options},_[PrintAs,_]]
-					]
-				];
-				metric/:CovDOfMetric[metric,Torsion[covd]]=covd;
-				metric/:CovDOfMetric[metric,Torsion[LCmetric]]=LCmetric;
-				metric/:CovDOfMetric[metric,Zero]=LCmetric;
-				metric/:LC[metric]=LCmetric;
-				
-				If[flatPD,Protect[PD]];
-				If[$ProtectNewSymbols,Protect[covd]];
-				
-				(* Derivatives of the metric are defined in DefCovD *)
-				(* Other covariant derivatives on the metric with upstairs abstract indices *)
-				If[!inducedQ,
-				invmetric/:HoldPattern[der_?FirstDerQ[invmetric[b_?vbQ,c_?vbQ]]]:=Module[{b1=DummyIn[vbundle],c1=DummyIn[vbundle]},-invmetric[b,b1]invmetric[c,c1]der[metric[-b1,-c1]]]];
-				(* There is no simple generalization for induced metrics.
-				QUESTION: Is there an equivalent rule for the epsilon tensor?*)
-			];
-			(* Determinant in the basis AIndex. Has to be defined after the covd and the invmetric *)
-			If[info===False,
-				Block[{$DefInfoQ=False},Determinant[metric,AIndex][]],
-				Determinant[metric,AIndex][]
-			];
-			
-			(* Define induced metric *)
-			If[tangentmetricQ,
-				If[inducedQ,xAct`xTensor`Private`DefInducedMetric[metric[-ind1,-ind2],{manifold},covd,{vector,supermetric,CovDOfMetric[supermetric]},flat]]
-			];
-			
-			(* Store conformal relations *)
-			If[confto=!=Null,
-				SetConformalTo[metric[-ind1,-ind2],confto]
-			];
-			
-						
-			If[DaggerQ[metric], (* ADDED, there are more things to add but it requires a lot of care and there are probably smarter ways to do it *)
-				(
-					(* Signature *)
-					If[Head[signdet]===List &&Length[signdet]===3,
-						SignatureOfMetric[daggermetric]^=signdet;
-						SignDetOfMetric[daggermetric]^=If[signdet[[3]]===0,(-1)^signdet[[2]],0],
-						SignDetOfMetric[daggermetric]^=signdet;
-					];
-					
-					(* Define inverse metric. TODO: Orthogonal and Projected? *)
-					If[invertQ,
-						If[!frozenQ,
-							Inv[daggermetric]^=daggermetric
-						],
-						Print["** DefMetric: non-invertible metric being defined! Dangerous!"]
-					];
-					 
-					(* Directional indices are not allowed in metrics. Why only for first metrics? *)
-					If[firstQ,
-						daggermetric[Dir[expr_],b_]:=ReplaceIndex[expr,xAct`xTensor`Private`UltraindexOf[expr]->b];
-						daggermetric[a_,Dir[expr_]]:=ReplaceIndex[expr,xAct`xTensor`Private`UltraindexOf[expr]->a];
-					];		
-				)
-			];
-			
-			MakexTensions[DefMetric,"End",signdet,metric[-ind1,-ind2],covd,options];
-			
-			On[OptionValue::nodef];
-			
-			If[pns,Protect[metric]];
-		]
-	]
-];
-
-Protect@DefMetric;
-
-
 (* ::Section:: *)
-(*2.5. Vertical operators*)
+(*2.4. Vertical operators*)
 
 
 (* ::Subsection:: *)
-(*2.5.1. Graded derivative*)
+(*2.4.1. Graded derivative*)
 
 
 GradeOfDer[head_[v_,rest___],WWedge]:=GradeOfDer[head,WWedge]+VertDeg[v];
@@ -1617,7 +1179,7 @@ MakeDerivation[head_,derL_,derR_,prod_,dergrade_]:=(
 
 
 (* ::Subsection:: *)
-(*2.5.2. Definition vertical exterior derivative (VertDiff)*)
+(*2.4.2. Definition vertical exterior derivative (VertDiff)*)
 
 
 DefGradedDer[VertDiff,WWedge,+1,PrintAs->$SymbolVerticalExteriorDerivative];
@@ -1680,7 +1242,7 @@ Protect[VertDiff];
 
 
 (* ::Subsection:: *)
-(*2.5.3. Definition vertical Interior derivative (VertInt)*)
+(*2.4.3. Definition vertical Interior derivative (VertInt)*)
 
 
 DefGradedDer[VertInt[v_],WWedge,-1,PrintAs->$SymbolVertInt];
@@ -1731,7 +1293,7 @@ Protect[VertInt];
 
 
 (* ::Subsection:: *)
-(*2.5.4. Definition vertical Lie derivative (VertLie)*)
+(*2.4.4. Definition vertical Lie derivative (VertLie)*)
 
 
 DefGradedDer[VertLie[v_],WWedge,0,PrintAs->$SymbolVertLie];
@@ -1772,7 +1334,7 @@ VertLie[c_?ConstantQ vvf1_][expr_]:=c VertLie[vvf1][expr]
 
 
 (* ::Subsection:: *)
-(*2.5.5. Definition certical Lie bracket (VertBracket)*)
+(*2.4.5. Definition certical Lie bracket (VertBracket)*)
 
 
 VertDeg[VertBracket[vvf1_,vvf2_]]:=VertDeg[vvf1]+VertDeg[vvf2]
@@ -1794,7 +1356,7 @@ PrintAs[VertBracket[vvf1__,vvf2__]]^:=Block[{$WarningFrom="Bracket Formatting"},
 
 
 (* ::Subsection:: *)
-(*2.5.6. Vertical operators and CTensors (not fully tested, to be tested for future versions)*)
+(*2.4.6. Vertical operators and CTensors (not fully tested, to be tested for future versions)*)
 
 
 Unprotect[VertDiff,VertInt,VertLie];
@@ -1807,7 +1369,7 @@ Protect[VertDiff,VertInt,VertLie,VertBracket];
 
 
 (* ::Subsection:: *)
-(*2.5.7. Relations between vertical operators*)
+(*2.4.7. Relations between vertical operators*)
 
 
 (*Cartan identity:*) (* Careful: Not always true. As far as I know, there is no way to check within xAct *)
@@ -1859,11 +1421,11 @@ Protect[SortVertOperators,VertBracketToVertLie,VertCartanMagicFormula];
 
 
 (* ::Section:: *)
-(*2.6. Auxiliary functions*)
+(*2.5. Auxiliary functions*)
 
 
 (* ::Subsection:: *)
-(*2.6.1. SetSigns*)
+(*2.5.1. SetSigns*)
 
 
 symbolNames=Replace[First@OwnValues[$ConstantSymbols],HoldPattern[_:>list_]:>Map[HoldForm,Unevaluated[list]]];
@@ -1884,7 +1446,7 @@ Protect[SetSigns,$NamesOfSigns,$ValuesOfSigns];
 
 
 (* ::Subsection:: *)
-(*2.6.2. UnDefConstantsExceptSigns*)
+(*2.5.2. UnDefConstantsExceptSigns*)
 
 
 UnDefConstantsExceptSigns:=Catch@Module[{symbolNames,stringNames,ListOfOtherConstants},
@@ -1903,14 +1465,14 @@ UnDefConstantsExceptSigns:=Catch@Module[{symbolNames,stringNames,ListOfOtherCons
 
 
 (* ::Subsection:: *)
-(*2.6.3. xActQ*)
+(*2.5.3. xActQ*)
 
 
 xActQ[x_]:=ConstantSymbolQ[x]||CovDQ[x]||InertHeadQ[x]||ManifoldQ[x]||MappingQ[x]||ParameterQ[x]||ScalarFunctionQ[x]||VBundleQ[x]||xTensorQ[x]||AbstractIndexQ[x]
 
 
 (* ::Subsection:: *)
-(*2.6.4. ResetSession*)
+(*2.5.4. ResetSession*)
 
 
 Options[ResetSession]:={UndefInfo->False,Signs->1};
@@ -1988,7 +1550,7 @@ Protect[ResetSession];
 
 
 (* ::Subsection:: *)
-(*2.6.5. MakePattern*)
+(*2.5.5. MakePattern*)
 
 
 (* Function to make patterns for symbol matching *)
@@ -1999,7 +1561,7 @@ On[RuleDelayed::rhs]
 
 
 (* ::Subsection:: *)
-(*2.6.6. TensorWithIndices*)
+(*2.5.6. TensorWithIndices*)
 
 
 ChristoffelAUX[PD]:=Zero
@@ -2069,7 +1631,7 @@ Protect[TensorWithIndices];
 
 
 (* ::Subsection:: *)
-(*2.6.7. DeleteDuplicatesTensors*)
+(*2.5.7. DeleteDuplicatesTensors*)
 
 
 (* This function checks the Heads and removes repeated ones (regardless of the indices *)
@@ -2079,7 +1641,7 @@ Protect[DeleteDuplicatesTensors];
 
 
 (* ::Subsection:: *)
-(*2.6.8. HeadOfTensor2*)
+(*2.5.8. HeadOfTensor2*)
 
 
 (* Extracts the head of a tensor even if it is zero *)
@@ -2092,7 +1654,7 @@ Protect[HeadOfTensor2];
 
 
 (* ::Subsection:: *)
-(*2.6.9. CountCovD*)
+(*2.5.9. CountCovD*)
 
 
 (* Counts the highest number of nested derivatives in a monomial *)
@@ -2103,7 +1665,7 @@ CountCovD[der_?CovDQ][expr_]/;FreeQ[expr,Plus]:=0
 
 
 (* ::Subsection:: *)
-(*2.6.10. splitList*)
+(*2.5.10. splitList*)
 
 
 (* splitList takes the list LIST of elements and a list of orders ORDERS (one for each element of the list, they can mean anything), and reorders LIST such that the factor with the highest order appears last.
@@ -2149,7 +1711,7 @@ splitList[list_List,orders_List,option:OptionsPattern[Options[DivisionWWedge]]]:
 
 
 (* ::Subsection:: *)
-(*2.6.11. splitFactors*)
+(*2.5.11. splitFactors*)
 
 
 (* Converts a product of WWedge and Times into a list *) 
@@ -2157,7 +1719,7 @@ splitFactors[expr_]:=If[Head[expr]===WWedge||Head[expr]===Times,splitFactors/@Li
 
 
 (* ::Subsection:: *)
-(*2.6.12. PositionOfElement*)
+(*2.5.12. PositionOfElement*)
 
 
 PositionOfElement::WrongDivision="Wrong WWedge division";
@@ -2169,7 +1731,7 @@ PositionOfElement[list_List,elem_,option:OptionsPattern[Options[DivisionWWedge]]
 
 
 (* ::Subsection:: *)
-(*2.6.13. adding*)
+(*2.5.13. adding*)
 
 
 (* Allows to sum the elements of a list. If the expression is not a list but a single element, it returns the element. Notice that Total[v1[a,b]] doesn't work as expected. *)
@@ -2177,7 +1739,7 @@ adding[x_List]:=Total[Flatten[{x}]]
 
 
 (* ::Subsection:: *)
-(*2.6.14. SumToList*)
+(*2.5.14. SumToList*)
 
 
 (* Converts a sum into a list (if there is only one term, it turns it into a list as well) *)
@@ -2186,7 +1748,7 @@ SumToList[x_]:=Flatten[{x}]
 
 
 (* ::Subsection:: *)
-(*2.6.15. DivisionWWedge*)
+(*2.5.15. DivisionWWedge*)
 
 
 Options[DivisionWWedge]:={ReturnZeroOrError->Error};
@@ -2201,11 +1763,11 @@ DivisionWWedge[expr_,elem_,option:OptionsPattern[Options[DivisionWWedge]]]:=With
 
 
 (* ::Subsection:: *)
-(*2.6.16. Generate tensors' names*)
+(*2.5.16. Generate tensors' names*)
 
 
 (* ::Subsubsection:: *)
-(*2.6.16.1. GenerateDiffName*)
+(*2.5.16.1. GenerateDiffName*)
 
 
 (* This function generates the names and PrintAs of dltensors *) 
@@ -2229,7 +1791,7 @@ GenerateDiffName[form_,opts:OptionsPattern[Options[GenerateDiffName]]]:=Module[{
 
 
 (* ::Subsubsection:: *)
-(*2.6.16.2. GenerateVariationalName*)
+(*2.5.16.2. GenerateVariationalName*)
 
 
 $RemoveParenthesesPrintAs:=True;
@@ -2258,7 +1820,7 @@ GenerateVariationalName[tensor_,opts:OptionsPattern[Options[GenerateVariationalN
 
 
 (* ::Subsubsection:: *)
-(*2.6.16.3. GeneratePartialPartialName*)
+(*2.5.16.3. GeneratePartialPartialName*)
 
 
 ConsecutiveCounts[list_]:={#[[1]],Length[#]}&/@Split[Flatten[{list}]]
@@ -2287,7 +1849,7 @@ GeneratePartialPartialName[function_,tensors_,opts:OptionsPattern[Options[Genera
 
 
 (* ::Subsection:: *)
-(*2.6.17. MakeVertRule*)
+(*2.5.17. MakeVertRule*)
 
 
 (* This function creates a rule and the corresponding rule for their dltensors (linearized rule) *)
@@ -2305,7 +1867,7 @@ Protect[MakeVertRule];
 
 
 (* ::Subsection:: *)
-(*2.6.18. FilterVertExpand*)
+(*2.5.18. FilterVertExpand*)
 
 
 (* FilterVertExpand takes a dltensor, the formula to expand dltensor and some options that indicates if it should expand it, leave it as is, or set to zero *)
@@ -2807,13 +2369,7 @@ DefAdditionalTensors[tensor_[indices___],dependencies_,sym_,options:OptionsPatte
 		GenerateExpandVertDiffRule[{VertDiff[tensor[indices]],VertDiff[AChristoffel[TensorID[tensor][[2]]][indices]]-VertDiff[AChristoffel[TensorID[tensor][[3]]][indices]]}];
 		ProtectVertDiffRule[VertDiff[tensor]];
 		)
-	];
-	
-	If[VertDeg@tensor===1&&HasDaggerCharacterQ[tensor]&&Length@TensorID@MasterOfCPSTensor@tensor===3&&TensorID[MasterOfCPSTensor@tensor][[1]]===AChristoffel&&CovDQ[TensorID[MasterOfCPSTensor@tensor][[2]]]&&CovDQ[TensorID[MasterOfCPSTensor@tensor][[3]]]&&TensorID[MasterOfCPSTensor@tensor][[3]]=!=PD,(* This case is handled separately becuase of the order of definition between complex and VertDiff *)
-		(
-		ProtectVertDiffRule[tensor]; (* The rule for Dagger is generated but not protected *)
-		)
-	];
+	];	
 	)
 
 
@@ -2921,10 +2477,10 @@ GenerateExpandVertDiffRuleAUX[dltensor_[inds___],expansion_,option:OptionsPatter
 
    newdefinitionQ=dltensor[inds]=!=expansion&&ToCanonical[expansion-oldexpansion//ExpandVertDiff[]]=!=0; (* It has a rule now and is different from the previous one *)
    redefinitionQ=dltensor[inds]=!=oldexpansion&&ToCanonical[expansion-oldexpansion//ExpandVertDiff[]]=!=0;  (* It had a rule before and now it has a new one *)
-   removalQ=dltensor[inds]=!=oldexpansion&&dltensor[inds]===expansion; (* It had an old rule and not it does not *)
+   removalQ=dltensor[inds]=!=oldexpansion&&dltensor[inds]===expansion; (* It had an old rule and now it does not *)
      
    If[redefinitionQ,RemoveExpandVertDiffRule[dltensor[inds]]]; (* If the expansion is not the same as before, we first remove the previous Variational Relations *)
-   If[removalQ&&$UndefInfoQ,Print["** RemoveExpandVertDiffRule: Expansion formula removed for ",dltensor,"."]];
+   If[removalQ&&$UndefInfoQ,(Print["** RemoveExpandVertDiffRule: Expansion formula removed for ",dltensor,"."]; If[Dagger@dltensor=!=dltensor,Print["** RemoveExpandVertDiffRule: Expansion formula removed for ",Dagger@dltensor,"."]];)];
    If[newdefinitionQ&&$DefInfoQ,Print["** GenerateExpandVertDiffRule: Expansion formula generated for ",dltensor,"."]];
  
  (* Add variational relations *)
