@@ -58,7 +58,7 @@ If xCPS contributes to your research, please cite:
 
 ```mathematica
 (* Load the package *)
-<< xAcxCPS
+<< xAct`xCPS`
 $PrePrint = ScreenDollarIndices;
 
 (* Setup manifold and metric *)
