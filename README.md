@@ -87,10 +87,10 @@ DefTensor[phi[], M, PrintAs -> "\[Phi]"];
 Implode[LCDer[-a]@phi[]]
 
 (* Generic scalar function depending on φ and ∇φ *)
-DefScalarFunction[LScalar1, {LCDerphi}, PrintAs -> "\!\(\*SubscriptBox[\(L\), \(1\)]\)"];
+DefScalarFunction[LScalar1, {phi,LCDerphi}, PrintAs -> "\!\(\*SubscriptBox[\(L\), \(1\)]\)"];
 
 (* Generic scalar Lagrangian *)
-L = Sqrt[-Detg[]] LScalar1[LCDerphi];
+L = Sqrt[-Detg[]] LScalar1[phi,LCDerphi];
 
 (* First variation with respect to φ *)
 FirstVariation[phi, LCDer][L]
