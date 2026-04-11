@@ -73,10 +73,10 @@ DefMetric[-1, g[-a, -b], LCDer];
 LGR = RicciScalarLCDer[] Sqrt[-Determinant[g][]];
 
 (* Equations of Motion → Einstein equations *)
-EOM[g, LCDer][LGR]
+EOM[g, LCDer][LGR] // ContractMetric // Simplification
 
 (* Symplectic Current *)
-SymplecticCurrent[g, LCDer][LGR]
+SymplecticCurrent[g, LCDer][LGR] // ContractMetric // Simplification
 
 (******************************************)
 (* Example 2: Generic Scalar Field Theory *)
@@ -87,10 +87,10 @@ DefTensor[phi[], M, PrintAs -> "\[Phi]"];
 Implode[LCDer[-a]@phi[]]
 
 (* Generic scalar function depending on φ and ∇φ *)
-DefScalarFunction[LScalar1, {LCDer@phi}, PrintAs -> "\!\(\*SubscriptBox[\(L\), \(1\)]\)"];
+DefScalarFunction[LScalar1, {LCDerphi}, PrintAs -> "\!\(\*SubscriptBox[\(L\), \(1\)]\)"];
 
 (* Generic scalar Lagrangian *)
-L = Sqrt[-Detg[]] LScalar1[LCDer@phi];
+L = Sqrt[-Detg[]] LScalar1[LCDerphi];
 
 (* First variation with respect to φ *)
 FirstVariation[phi, LCDer][L]
