@@ -48,11 +48,12 @@ If xCPS contributes to your research, please cite:
 
 ### The Package
 
-> J. Margalef-Bentabol, "xCPS: an xAct package for covariant phase space, Noether symmetries and Noether charges." arXiv preprint (forthcoming). [GitHub: juanmargalef/xCPS](https://github.com/juanmargalef/xCPS)
+> J. Margalef-Bentabol, "xCPS: an xAct package for covariant phase space, Noether charges, and entropy
+", arXiv preprint [2606.05204](https://arxiv.org/abs/2606.05204)
 
 ### Theoretical Foundation
 
-> J. Margalef-Bentabol and E. J. S. Villaseñor, "Geometric formulation of the covariant phase space methods with boundaries," [*Phys. Rev. D* **103**, 025011 (2021)](http://dx.doi.org/10.1103/PhysRevD.103.025011). [arXiv:2008.01842](https://arxiv.org/abs/2008.01842)
+> J. Margalef-Bentabol and E. J. S. Villaseñor, "Geometric formulation of the covariant phase space methods with boundaries", [*Phys. Rev. D* **103**, 025011 (2021)](http://dx.doi.org/10.1103/PhysRevD.103.025011). [arXiv:2008.01842](https://arxiv.org/abs/2008.01842)
 
 ## Quick Example
 
