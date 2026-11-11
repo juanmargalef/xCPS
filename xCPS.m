@@ -202,7 +202,7 @@ CoefficientsOfVVF::usage="CoefficientsOfVVF[VVF] returns the coefficients associ
 
 ComponentsOfGeneralizedVVF::usage="ComponentsOfGeneralizedVVF[GVVF] returns the list of components of the generalized variational vector field 'GVVF' (the 'directions' of 'GVVF' in the space of fields).";
 
-ComponentsOfVVF::usage="ComponentsOfVVF[VVF] returns the list of components of the generalized variational vector field 'VVF' (the 'directions' of 'VVF' in the space of tensors).";
+ComponentsOfVVF::usage="ComponentsOfVVF[VVF] returns the list of components of the variational vector field 'VVF' (the 'directions' of 'VVF' in the space of tensors).";
 
 CovDOfNormal::usage="CovDOfNormal[n] returns the covariant derivative associated with the normal vector 'n'.";
 
@@ -227,7 +227,7 @@ DiscardTotalDerivative::usage="DiscardTotalDerivative[expr] removes all total de
 DivergenceQ::usage="
 DivergenceQ[metric, option][Lagrangian] checks whether the scalar expression 'expr' is a total divergence with respect to the Levi-Civita connection of 'g' (see DivergenceQ).\n
 DivergenceQ[metric, der, option][Lagrangian] checks whether the scalar expression 'expr' is a total divergence with respect to the CovD 'der'\n
-DivergenceQ[{metric, LC}, der, option][Lagrangian] checks whether the scalar expression 'expr' is a total divergence with respect to 'der'. 'metric' is an auxiliary metric and LC its associated Levi-Civitta connection (possibly extended to act over the same bundles as 'der').
+DivergenceQ[{metric, LC}, der, option][Lagrangian] checks whether the scalar expression 'expr' is a total divergence with respect to 'der'. 'metric' is an auxiliary metric and LC its associated Levi-Civita connection (possibly extended to act over the same bundles as 'der').
 - Options:
   * CheckZero->False: If True, DivergenceQ uses === instead of == to check if the expressions vanish."
   
@@ -248,6 +248,7 @@ EOMOf1Form::usage="EOMOf1Form[HeadOfTensor, der][dlLagrangian] extracts the equa
 ExpandVertDiff::usage="ExpandVertDiff[options][expr] expands the vertical exterior derivatives appearing in 'expr'.
 - Options:
   * SeparateMetric->True
+  * SeparateDir->True
   * Explode->True
   * ExpandVertDiffCovD->True
   * ExpandVertDiffLieD->True
@@ -278,15 +279,15 @@ FindPotentialGradient[metric, iteration][expr, optionalfunctions]=FindPotentialG
 
 FirstVariation::usage="FirstVariation[tensors, der, options][Lagrangian] is equivalent to FirstVariationOf1Form[tensors, der, options][VertDiff@Lagrangian].";
 
-FirstVariationOf1Form::usage="FirstVariationOf1Form[tensors, der, options][dlLagrangian] computes the first variation of a dlLagrangian with respect to tensors using der to 'integrate by parts' (Leibniz rule) y keeping the total derivative term TotalDerivative[der][\[CapitalTheta]].";
+FirstVariationOf1Form::usage="FirstVariationOf1Form[tensors, der, options][dlLagrangian] computes the first variation of a dlLagrangian with respect to tensors using der to 'integrate by parts' (Leibniz rule) and keeping the total derivative term TotalDerivative[der][\[CapitalTheta]].";
 
 FunctionOfPartialPartial::usage="FunctionOfPartialPartial[PartialPartialTensor] returns the scalar function associated with 'PartialPartialTensor'.";
 
 GeneralizedVVFQ::usage="GeneralizedVVFQ[GVVF] checks if 'GVVF' has been defined as a generalized variational vector field.";
 
-GenerateExpandVertDiffRule::usage="GenerateExpandVertDiffRule[{dltensor, expansion}, options] generates the expansion rule dltensor->expansion dos 'dltensor' to be used by ExpandVertDiff. It checks if VertDeg match and if the indices are in the natural position before creating the rule (it can be deactivated with the option CheckGenerateExpandVertDiffRule->False).";
+GenerateExpandVertDiffRule::usage="GenerateExpandVertDiffRule[{dltensor, expansion}, options] generates the expansion rule dltensor->expansion for 'dltensor' to be used by ExpandVertDiff. It checks if VertDeg match and if the indices are in the natural position before creating the rule (it can be deactivated with the option CheckGenerateExpandVertDiffRule->False).";
 
-KretschmannToRiemann::usage = "KretschmannToRiemann[expr] substitutes the Krestchmann tensors for the 'square' of the Riemann tensor.";
+KretschmannToRiemann::usage = "KretschmannToRiemann[expr] substitutes the Kretschmann scalars by the 'square' of the Riemann tensor.";
 
 LagrangianQ::usage="LagrangianQ[expr] verifies whether 'expr' is a scalar with zero vertical degree.";
 
@@ -305,7 +306,7 @@ SymmetryPotential::usage="SymmetryPotential[vvf][der][Lagrangian] computes the N
 NoetherSymmetryQ::usage="
 NoetherSymmetryQ[vvf][metric, option][Lagrangian] checks whether the variational vector field 'vvf' is a Noether symmetry of 'Lagrangian' with respect to the Levi-Civita connection of 'g' (see DivergenceQ).\n
 NoetherSymmetryQ[vvf][metric, der, option][Lagrangian] checks whether the variational vector field 'vvf' is a Noether symmetry of 'Lagrangian' with respect to the CovD 'der'\n
-NoetherSymmetryQ[vvf][{metric, LC}, der, option][Lagrangian] checks whether the scalar expression 'expr' is a total divergence with respect to 'der'. 'metric' is an auxiliary metric and LC its associated Levi-Civitta connection (possibly extended to act over the same bundles as 'der').
+NoetherSymmetryQ[vvf][{metric, LC}, der, option][Lagrangian] checks whether the scalar expression 'expr' is a total divergence with respect to 'der'. 'metric' is an auxiliary metric and LC its associated Levi-Civita connection (possibly extended to act over the same bundles as 'der').
 - Options:
   * CheckZero->False: If True, DivergenceQ uses === instead of == to check if the expressions vanish.";
 
@@ -466,7 +467,7 @@ Both::usage = "Both is a possible value for the Directed option in VariationalRe
 
 CheckGenerateExpandVertDiffRule::usage = "CheckGenerateExpandVertDiffRule is an option for GenerateExpandVertDiffRule. If True, the vertical degree and index positions are validated; if False, the rule is generated without checks.";
 
-CheckZero::usage = "CheckZero is an option for DivergenceQ. When set to True, SameQ (===) is used to check if the equations of motion vanish (hence returnin either True or False); when False, Equal (==) is used possibly returning some unevaluated boolean conditions.";
+CheckZero::usage = "CheckZero is an option for DivergenceQ. When set to True, SameQ (===) is used to check if the equations of motion vanish (hence returning either True or False); when False, Equal (==) is used possibly returning some unevaluated boolean conditions.";
 
 ConstantTensors::usage = "ConstantTensors is an option for ExpandVertDiff and related functions. It lists tensors to be treated as variationally constant, meaning their vertical exterior derivative (VertDiff) is assumed to vanish.";
 
@@ -655,7 +656,7 @@ VertExactHeadQ[_]:=False; (* It will be set true for specific cases *)
 
 
 (* ::Subsection:: *)
-(*2.2.5. VertExactHeadQ*)
+(*2.2.5. VertExactQ*)
 
 
 VertExactQ[tensor_?VertExactHeadQ[inds___]]/;SlotsOfTensor[tensor]===xAct`xTensor`Private`SignedVBundleOfIndex/@{inds}:=True; (* A tensor defined as VertExact with the right indices *)
@@ -740,7 +741,7 @@ If[Length[slots]=!=Length[indices]||!FreeQ[slots,_AnyIndices],Return[node]];
 tensor@@MapThread[Function[{index,slot},If[DIndexQ[index]&&MetricsOfVBundle[VBundleOfIndex[index]]=!={},If[DownIndexQ[slot],DownIndex[index],UpIndex[index]],index]],{indices,slots}]]}]
 ],expr]
 
-If[!TrueQ[$NaturalTensorDirPatchInstalled],
+If[!TrueQ[$NaturalTensorDirPatchInstalled]&&FreeQ[DownValues[ToCanonical],NaturalTensorDirIndices], (* FreeQ guard: the flag is cleared when the package is reloaded *)
 (
 Unprotect[ToCanonical];
 $ToCanonicalBeforeNaturalTensorDir=DownValues[ToCanonical];
@@ -752,15 +753,9 @@ $NaturalTensorDirPatchInstalled=True;
 
 
 (* ::Subsection:: *)
-(*2.3.5. Modifications to LieD and LieDToCovD*)
+(*2.3.5. [Removed: duplicated definition of delta with Dir, see 2.3.3]*)
 
 
-Unprotect@delta;
-
-delta[Dir[expr_],index_]:=Module[{free=FindFreeIndices[expr]},If[Length@free=!=1,expr,ReplaceIndex[expr,free[[1]]->index]]]
-delta[index_,Dir[expr_]]:=Module[{free=FindFreeIndices[expr]},If[Length@free=!=1,expr,ReplaceIndex[expr,free[[1]]->index]]]
-
-Protect@delta;
 
 
 (* ::Subsection:: *)
@@ -878,7 +873,7 @@ Module[{dm=der[met],result},
 (CM:xAct`xTensor`Private`ContractMetric1[{od_,aud_},{metric_,nv_}])[rest_. HoldPattern[WWedge[expr2__,der_?FirstDerQ[expr1_]]]met:metric_[b_,c_]]:=
 	Module[{dm=der[met],result},
 	If[(od||dm===0)&&xAct`xTensor`Private`differentexpressionsQ[result=CM[expr1 met],{expr1,met}],
-	rest WWedge[expr2,CM[der[result]]]-rest WWedge[expr2,CM[dm expr1]],rest WWedge[CM[expr2,met der[expr1]]]
+	rest WWedge[expr2,CM[der[result]]]-rest WWedge[expr2,CM[dm expr1]],rest WWedge[expr2,CM[met der[expr1]]]
 	]]/;(MemberQ[FindFreeIndices[expr1],ChangeIndex[c]|ChangeIndex[b]]&&Head[expr1]=!=metric)
 
 
@@ -902,7 +897,7 @@ Module[{dm=der[met],result},
 (*2.3.11. Modification to SeparateMetric*)
 
 
-SubValues[SeparateMetric]={HoldPattern[SeparateMetric[args___][HoldPattern[VertInt[arg1_][arg2_]]]]:>VertInt[arg1][SeparateMetric[args][arg2]]}~Join~(SubValues@SeparateMetric);
+SubValues[SeparateMetric]={HoldPattern[SeparateMetric[args___][HoldPattern[VertInt[arg1_][arg2_]]]]:>VertInt[arg1][SeparateMetric[args][arg2]]}~Join~DeleteCases[SubValues@SeparateMetric,_?(!FreeQ[#,VertInt]&)]; (* DeleteCases keeps this idempotent under reloading *)
 
 
 (* ::Subsection:: *)
@@ -1174,8 +1169,8 @@ ToCanonical[HoldPattern[Keep[expr_]]]:=Keep[ToCanonical[expr]]
 ToCanonical[HoldPattern[der_?CovDQ[ind_][expr_Keep]]]:=der[ind][Keep[ToCanonical[expr]]]
 ToCanonical[expr_And]:=And@@((List@@expr)//Sort//ToCanonical)
 ToCanonical[expr_Or]:=Or@@((List@@expr)//Sort//ToCanonical)
-PrependTo[DownValues[ContractMetric],HoldPattern[ContractMetric[expr_And,m_]]:>And@@(ContractMetric[#,m]&/@(List@@expr))];
-PrependTo[DownValues[ContractMetric],HoldPattern[ContractMetric[expr_Or,m_]]:>Or@@(ContractMetric[#,m]&/@(List@@expr))];
+If[FreeQ[DownValues[ContractMetric],Verbatim[Blank[And]]],PrependTo[DownValues[ContractMetric],HoldPattern[ContractMetric[expr_And,m_]]:>And@@(ContractMetric[#,m]&/@(List@@expr))]];
+If[FreeQ[DownValues[ContractMetric],Verbatim[Blank[Or]]],PrependTo[DownValues[ContractMetric],HoldPattern[ContractMetric[expr_Or,m_]]:>Or@@(ContractMetric[#,m]&/@(List@@expr))]];
 ScreenDollarIndices[expr_And]:=ScreenDollarIndices/@expr
 ScreenDollarIndices[expr_Or]:=ScreenDollarIndices/@expr
 SymmetryOf[HoldPattern[Keep[expr_]]]:=SymmetryOf[expr]
@@ -1200,18 +1195,14 @@ Grade[projector_?InertHeadQ[expr_],WWedge]/;DefInfo[projector]==={"projector ine
 Grade[xAct`xTensor`Private`ih:_?InertHeadQ[__],xAct`xTensor`Private`prod_?GradedProductQ]:=Throw[Message[Grade::unknown,"grade of inert-head expression",xAct`xTensor`Private`ih]]
 Grade[xAct`xTensor`Private`expr_,xAct`xTensor`Private`prod_?ProductQ]:=0
 
-Protect \.08[Grade];
+Protect[Grade];
 
 
 (* ::Subsection:: *)
 (*2.3.23. Modifications to Expand*)
 
 
-Unprotect@Expand;
-
-Expand[expr_?TotalDerivativeQ]:=Module[{totalsymbol=Head[expr],exprinterior=First[expr]},totalsymbol[Expand[exprinterior]]]
-
-Protect@Expand;
+(* Expand acts inside total derivatives through an UpValue of each total-derivative head, defined in DefTotalDerivative (6.1.1, 6.1.2), instead of a global DownValue of System`Expand. *)
 
 
 (* ::Section:: *)
@@ -1590,7 +1581,6 @@ ResetSession[opt:OptionsPattern[Options[ResetSession]]]:=Module[{originalUndefIn
 	UndefScalarFunction/@$ScalarFunctions//Quiet;
 	UndefParameter/@$Parameters//Quiet;
 	UndefTensor/@$MasterTensors//Quiet;
-	UndefParameter/@$Parameters//Quiet;
 	UndefGeneralizedVVF/@$GeneralizedVVF//Quiet;
 	UndefMapping/@$Mappings//Quiet;
 	UndefVBundle/@Select[$VBundles,!TangentBundleQ[#]&]//Quiet;
@@ -1662,10 +1652,6 @@ On[RuleDelayed::rhs]
 (*2.5.6. TensorWithIndices*)
 
 
-ChristoffelAUX[PD]:=Zero
-ChristoffelAUX[PD,PD]:=Zero
-AChristoffelAUX[PD]:=Zero
-AChristoffelAUX[PD,PD]:=Zero
 
 
 (* Fills the slots of tensors with the correct indices *)
@@ -2022,7 +2008,8 @@ FilterVertExpand[dltensor_,options:OptionsPattern[Options[ExpandVertDiff]]][expa
 		dltensor,
 		Flatten[{OptionValue[HoldExpandVertDiff]/. CheckOptions[options] /. Options[ExpandVertDiff]}], (* To allow to input lists or single elements *)
 		Flatten[{OptionValue[ConstantTensors]/. CheckOptions[options] /. Options[ExpandVertDiff]}],
-		Flatten[{OptionValue[NonConstantTensors]/. CheckOptions[options] /. Options[ExpandVertDiff]}]
+		Flatten[{OptionValue[NonConstantTensors]/. CheckOptions[options] /. Options[ExpandVertDiff]}],
+		FilterRules[Flatten[{options}],Except[HoldExpandVertDiff|ConstantTensors|NonConstantTensors]] (* The remaining options are propagated to the recursive expansion *)
 	][expandedformula]; 
 
 (* Given a dl-tensor and its expansion formula, decide:
@@ -2031,11 +2018,11 @@ FilterVertExpand[dltensor_,options:OptionsPattern[Options[ExpandVertDiff]]][expa
      3. Base case      \[RightArrow] dltensor[inds] itself
      4. Otherwise      \[RightArrow] recursively expand the expansion formula *)
 
-FilterVertExpandParsedOptions[dltensor_[inds___], holdList_, constantList_, nonConstantList_][expandedformula_] := 
+FilterVertExpandParsedOptions[dltensor_[inds___], holdList_, constantList_, nonConstantList_, otherOptions_List:{}][expandedformula_] := 
   Which[VariationallyConstantQ[constantList, nonConstantList][dltensor[inds]],0,
     VertDiffOfTensorToHoldQ[holdList][dltensor[inds]],dltensor[inds],
     expandedformula === dltensor[inds],dltensor[inds],
-    True,expandedformula // ExpandVertDiff[HoldExpandVertDiff -> holdList,ConstantTensors -> constantList,NonConstantTensors -> nonConstantList]
+    True,expandedformula // ExpandVertDiff[Sequence@@otherOptions,HoldExpandVertDiff -> holdList,ConstantTensors -> constantList,NonConstantTensors -> nonConstantList]
   ]
 
 
@@ -2149,7 +2136,7 @@ HighlightConstantRelations[graph_,initialConstantVertices_]:=Module[{
 SubGraphRelations::missing= "One of the tensors in `1` is not included in the Variational Graph `2`.";
 
 ListIn={"Up","up","In","in","Inward","inward","Inwards","inwards"};
-ListOut={"Down","down","Out","out","Outward","outward","Outwards","Outwards"};
+ListOut={"Down","down","Out","out","Outward","outward","Outwards","outwards"};
 ListBoth={"Both","both","xAct`xCPS`Private`Both"};
 
 (* Creates the subgraph of influence of a vertex *)
@@ -2221,7 +2208,7 @@ AddVariationalRelation[masterTensor_?xTensorQ->dependentTensorList_List]:=AddVar
 AddVariationalRelation[masterTensorList_List->dependentTensor_?xTensorQ]:=AddVariationalRelation[#->dependentTensor]&/@masterTensorList
 AddVariationalRelation[_->Zero]:=Null
 AddVariationalRelation[Zero->dependentTensor_]:=Throw@Message[AddVariationalRelation::zerotensor,dependentTensor]
-AddVariationalRelation[mastertensor_?VertExactHeadQ->dependentTensor_?VertExactHeadQ]:=AddVariationalRelation[MasterOfCPSTensor@mastertensor,MasterOfCPSTensor@dependentTensor]
+AddVariationalRelation[mastertensor_?VertExactHeadQ->dependentTensor_?VertExactHeadQ]:=AddVariationalRelation[MasterOfCPSTensor@mastertensor->MasterOfCPSTensor@dependentTensor]
 
 (* Adds a variational relation *)
 AddVariationalRelation[mastertensor_?xTensorQ->dependentTensor_?xTensorQ]:=
@@ -2260,9 +2247,7 @@ RemoveVariationalRelation[mastertensor_?xTensorQ->dependentTensor_?xTensorQ]:=
 	];
 	If[(Dagger[mastertensor]=!=mastertensor||Dagger[dependentTensor]=!=dependentTensor)&&$RemoveVariationalRelation,
 		(
-		$RemoveVariationalRelation=False;
-		RemoveVariationalRelation[Dagger[mastertensor]->Dagger[dependentTensor]];
-		$RemoveVariationalRelation=True;
+			Block[{$RemoveVariationalRelation=False},RemoveVariationalRelation[Dagger[mastertensor]->Dagger[dependentTensor]]];
 		)
 	];
 	)
@@ -2414,7 +2399,7 @@ VariationalRelationsOfImploded[tensor_?xTensorQ,_]:={tensor}
 (* DefTensor defines, apart from the tensor, its vertical exterior derivative and its variational vector *)
 
 Unprotect[DefTensor];
-Options[DefTensor]=Options[DefTensor]~Join~{DefineExactFormAfterDefTensor->True,DefineVariationalVectorAfterDefTensor->True,VariationallyConstantQ->False,VertDeg->0};
+Options[DefTensor]=DeleteCases[Options[DefTensor],(Rule|RuleDelayed)[DefineExactFormAfterDefTensor|DefineVariationalVectorAfterDefTensor|VariationallyConstantQ|VertDeg,_]]~Join~{DefineExactFormAfterDefTensor->True,DefineVariationalVectorAfterDefTensor->True,VariationallyConstantQ->False,VertDeg->0};
 Options[DefAdditionalTensors]=Options[DefTensor]~Join~{DefInverseMetric->False,PrintInverse->False};
 Protect[DefTensor];
 
@@ -2501,11 +2486,10 @@ DefAdditionalTensors[tensor_[indices___],dependencies_,sym_,options:OptionsPatte
 		(
 		AChristoffelAUX[TensorID[tensor][[2]],TensorID[tensor][[3]]]=tensor; (* For TensorWithIndices *)
 		AChristoffelAUX[TensorID[tensor][[3]],TensorID[tensor][[2]]]=MultiplyHead[-1,tensor]; (* For TensorWithIndices *)
-		Unprotect[VertDiff];
 		Unprotect[VertDiff,AChristoffel];
 		AChristoffel/: VertDiff[AChristoffel[TensorID[tensor][[2]],TensorID[tensor][[3]]]]=VertDiff@tensor;
 		AChristoffel/: VertDiff[AChristoffel[TensorID[tensor][[3]],TensorID[tensor][[2]]]]=MultiplyHead[-1,VertDiff@tensor];
-		Protect[VertDiff,Christoffel];
+		Protect[VertDiff,AChristoffel];
 		AddVariationalRelation[HeadOfTensorExtended@TensorWithIndices@AChristoffel[TensorID[tensor][[2]]]->tensor];
 		AddVariationalRelation[HeadOfTensorExtended@TensorWithIndices@AChristoffel[TensorID[tensor][[3]]]->tensor];
 		GenerateExpandVertDiffRule[{VertDiff[tensor[indices]],VertDiff[AChristoffel[TensorID[tensor][[2]]][indices]]-VertDiff[AChristoffel[TensorID[tensor][[3]]][indices]]}];
@@ -2602,7 +2586,7 @@ DefExactVerticalForm[tensor_Symbol?xTensorQ[inds___],dependencies_,sym_,options:
 
 Off[RuleDelayed::rhs]
 Options[GenerateExpandVertDiffRule]:={CheckGenerateExpandVertDiffRule->True};
-GenerateExpandVertDiffRule::missmatch="VertDeg missmatch: the VertDeg of `1` is `2`\.08, which does not match the VertDeg of the expansion.";
+GenerateExpandVertDiffRule::missmatch="VertDeg mismatch: the VertDeg of `1` is `2`, which does not match the VertDeg of the expansion.";
 GenerateExpandVertDiffRule::wrongindices="The indices of `1` are not the natural ones.";
 
 (* Function for the user to generate their own expansion rules *)
@@ -2651,9 +2635,7 @@ GenerateExpandVertDiffRuleAUX[dltensor_[inds___],expansion_,option:OptionsPatter
    
    If[Dagger@dltensor=!=dltensor&&$GenerateExpandVertDiffRuleDagger, (* To generate the Dagger version of the rule. Notice that no check is performed (e.g. if dltensor is real and the expansion is not or the opposite) *)
       (
-      $GenerateExpandVertDiffRuleDagger=False;
-      GenerateExpandVertDiffRule[{Dagger[dltensor[inds]],Dagger[expansion]},option];
-      $GenerateExpandVertDiffRuleDagger=True;
+      Block[{$GenerateExpandVertDiffRuleDagger=False},GenerateExpandVertDiffRule[{Dagger[dltensor[inds]],Dagger[expansion]},option]];
       )
    ];
 ]
@@ -2683,7 +2665,10 @@ ExpandVertDiff[options:OptionsPattern[Options[ExpandVertDiff]]][expr1_==expr2_]:
 (* ExpandVertDiff applies ExpandVertDiffRules to all the terms with the head VertDiff or all the terms that are exact (they always have a rule for ExpandVertDiffRules). *)
 ExpandVertDiff[options:OptionsPattern[Options[ExpandVertDiff]]][expr_] :=Module[{tmp},
   tmp=If[OptionValue[SeparateMetric],
-    If[(expr//SeparateMetric[])-expr==0//Simplification,expr,ExpandVertDiff[options][expr//SeparateMetric[]//SeparateMetric[]],expr//SeparateMetric[]]];
+    With[{sep=expr//SeparateMetric[]},
+      (* SameQ first: Simplification is only needed when SeparateMetric changed the expression. As in 1.1.2, the fourth argument of If is returned when the comparison is undecided. *)
+      If[sep===expr||((sep-expr==0)//Simplification),expr,ExpandVertDiff[options][sep//SeparateMetric[]],sep]],
+    expr];
     
   tmp=If[OptionValue[Explode],
     If[(tmp//Explode)=!=tmp,ExpandVertDiff[options][tmp//Explode],tmp],
@@ -2711,7 +2696,7 @@ Protect[ExpandVertDiff];
   Module[{sepmetric,sepdir, expcov,expLie,expBracket,expScalar,exptotder,tmp,totderterms},
   {sepmetric,sepdir,expcov,expLie,expBracket,expScalar,exptotder} = {SeparateMetric,SeparateDir,ExpandVertDiffCovD,ExpandVertDiffLieD,ExpandVertDiffBracket,ExpandVertDiffScalarFunction,ExpandVertDiffTotalDerivative} /. CheckOptions[options] /. Options[ExpandVertDiff];
    
-   tmp = VertDiff[If[sepmetric, SeparateMetric[][expr], expr]];
+   (* SeparateMetric is applied by ExpandVertDiff before ExpandVertDiffRules is called (the assignment that used to be here was overwritten by the next line). *)
    tmp = VertDiff[If[sepdir, SeparateDir[expr], expr]];
    
  (* Expanding covd is optional *)
@@ -3149,11 +3134,6 @@ DefPartialPartial[function_?ScalarFunctionQ,fields__]:=Module[{partialinvMetric,
 		)
 	];
 		
-	With[{tensorsdependencies=TensorsOfPartialPartial[PartialPartial[function][fields]]},
-
-		If[numberofcomplex===numberofhermitian+numberofantihermitian&&EvenQ[numberofantihermitian],
-			HermitianQ[]]
-	];
 	
     MakexTensions[DefPartialPartial,"End",function,fields]; 
 	
@@ -3307,7 +3287,7 @@ InfoFromVVF[vvf_?VVFQ]:= Module[
 ]
 
 
-CoefficientsOfVVF::unknown=" `1`is not a variational vector field.";
+CoefficientsOfVVF::unknown="`1` is not a variational vector field.";
 ComponentsOfVVF::unknown="`1` is not a variational vector field.";
 
 (* CoefficientsOfVVF extracts the first list of InfoFromVVF. ComponentsOfVVF extracts the last list of InfoFromVVF. *)
@@ -3365,7 +3345,7 @@ PossibleRuleQ[{tensor1_?xTensorQ[inds___],expr_}]:=List@@xAct`xTensor`Private`Ta
 Options[DefGeneralizedVVF]={VanishOverOtherForms->True,ProtectNewSymbol:>$ProtectNewSymbols,DefInfo->{"the generalized vector field",""},Validate->True};
 DefGeneralizedVVF::badinput = "Each element must be a two-element pair: `1`.";
 DefGeneralizedVVF::ZeroVertDeg = "No VertInt rule can be defined on forms with ZeroVertDeg: `1`.";
-DefGeneralizedVVF::IndicesMissmatch = "Indices missmatch: `1`.";
+DefGeneralizedVVF::IndicesMissmatch = "Indices mismatch: `1`.";
 DefGeneralizedVVF::RepeatedElements = "Repeated elements: `1`.";
 
 DefGeneralizedVVF[name_Symbol,options:OptionsPattern[Options[DefGeneralizedVVF]]][pairs_List?MatrixQ]:=DefGeneralizedVVF[name,options]@@pairs
@@ -3395,6 +3375,10 @@ DefGeneralizedVVF[name_Symbol,options:OptionsPattern[Options[DefGeneralizedVVF]]
 	RulesOfGeneralizedVVFQ[name]^=MakeRule/@list;
 	VanishOverOtherForms[name]^=OptionValue[VanishOverOtherForms];
 	DefInfo[name]^=info;
+		name/:Equal[name,gvvf2_?GeneralizedVVFQ]:=GVVFEqualQ[name,gvvf2];
+		name/:Equal[gvvf1_?GeneralizedVVFQ,name]:=GVVFEqualQ[gvvf1,name];
+		name/:SameQ[name,gvvf2_?GeneralizedVVFQ]:=GVVFSameQ[name,gvvf2];
+		name/:SameQ[gvvf1_?GeneralizedVVFQ,name]:=GVVFSameQ[gvvf1,name];
 	AppendToUnevaluated[$GeneralizedVVF,name];
 	
 	xAct`xTensor`Private`MakeDefInfo[DefGeneralizedVVF,name,info];
@@ -3429,10 +3413,10 @@ UndefGeneralizedVVF[gvvf_]:=Catch@With[{servants=ServantsOf[gvvf]},
 ];
 
 
-Unprotect[Equal,SameQ];
-gvvf1_?GeneralizedVVFQ==gvvf2_?GeneralizedVVFQ:=(Sort@RulesOfGeneralizedVVFQ[gvvf1]==Sort@RulesOfGeneralizedVVFQ[gvvf2])&&(VanishOverOtherForms[gvvf1]==VanishOverOtherForms[gvvf2])
-gvvf1_?GeneralizedVVFQ===gvvf2_?GeneralizedVVFQ:=(Sort[RulesOfGeneralizedVVFQ[gvvf1]]===Sort[RulesOfGeneralizedVVFQ[gvvf2]])&&(VanishOverOtherForms[gvvf1]===VanishOverOtherForms[gvvf2])
-Protect[Equal,SameQ,DefGeneralizedVVF,UndefGeneralizedVVF];
+(* Equality of GVVFs is implemented with UpValues attached to each GVVF in DefGeneralizedVVF, instead of DownValues of System`Equal and System`SameQ (which slowed down every == and === of the session). *)
+GVVFEqualQ[gvvf1_,gvvf2_]:=(Sort@RulesOfGeneralizedVVFQ[gvvf1]==Sort@RulesOfGeneralizedVVFQ[gvvf2])&&(VanishOverOtherForms[gvvf1]==VanishOverOtherForms[gvvf2])
+GVVFSameQ[gvvf1_,gvvf2_]:=(Sort[RulesOfGeneralizedVVFQ[gvvf1]]===Sort[RulesOfGeneralizedVVFQ[gvvf2]])&&(VanishOverOtherForms[gvvf1]===VanishOverOtherForms[gvvf2])
+Protect[DefGeneralizedVVF,UndefGeneralizedVVF];
 
 
 (* ::Section:: *)
@@ -3537,6 +3521,7 @@ DefTotalDerivative[PD,manifold_?ManifoldQ]:=With[{head=ToExpression["TotalDeriva
 	head[0]:=0;
 	head/: head[a_]+head[b_]:=head[a+b];
 	head/: Times[a_?ConstantQ,head[b_]]:=head[Times[a,b]];
+	head/: Expand[head[b_]]:=head[Expand[b]]; (* Expand acts inside the total derivative *)
 	
 	Unprotect[WeightOf,ToCanonical,Simplification];
 	
@@ -3587,6 +3572,7 @@ DefTotalDerivative[der_?CovDQ]:=With[{head=ToExpression["TotalDerivativeOf"<>ToS
 	head[0]:=0;
 	head/: head[a_]+head[b_]:=head[a+b];
 	head/: Times[a_?ConstantQ,head[b_]]:=head[Times[a,b]];
+	head/: Expand[head[b_]]:=head[Expand[b]]; (* Expand acts inside the total derivative *)
 	
 	Unprotect[WeightOf,ToCanonical,Simplification];
 	
@@ -3687,7 +3673,7 @@ NormalOfCovD[PD,ind_?AIndexQ]:=NormalOfManifold[BaseOfVBundle@VBundleOfIndex@ind
 NormalOfCovD[PD,manifold_?ManifoldQ]:=NormalOfManifold[manifold]
 NormalOfCovD[der_,ind_]/;der=!=PD :=NormalOfCovD[der]
 
-TotalDerivativeOfCovD[PD]:=If[Length@$Manifolds>1,Catch@Throw@Message[TotalDerivativeOfCovD::error,"PD is defined over every manifold. Use TotalDerivativeOfCovD[PD, manifold] or TotalDerivativeOfCovD[PD, index] instead."],TotalDerivativeOfManifold[$Manifolds[[1]]]]
+TotalDerivativeOfCovD[PD]:=Which[Length@$Manifolds==0,Catch@Throw@Message[TotalDerivativeOfCovD::error,"No manifolds defined."],Length@$Manifolds>1,Catch@Throw@Message[TotalDerivativeOfCovD::error,"PD is defined over every manifold. Use TotalDerivativeOfCovD[PD, manifold] or TotalDerivativeOfCovD[PD, index] instead."],True,TotalDerivativeOfManifold[$Manifolds[[1]]]]
 TotalDerivativeOfCovD[PD,ind_?AIndexQ]:=TotalDerivativeOfManifold[BaseOfVBundle@VBundleOfIndex@ind]
 TotalDerivativeOfCovD[PD,manifold_?ManifoldQ]:=TotalDerivativeOfManifold[manifold]
 TotalDerivativeOfCovD[der_,ind_]/;der=!=PD :=TotalDerivativeOfCovD[der]
@@ -3839,9 +3825,9 @@ UndefManifoldModificationsCPS[manifold_]:=UndefTensor[NormalOfManifold[manifold]
 
 
 Unprotect[DefCovD];
-Options[DefCovD]=Options[DefCovD]~Join~{VariationallyConstantQ->False};
+Options[DefCovD]=DeleteCases[Options[DefCovD],(Rule|RuleDelayed)[VariationallyConstantQ,_]]~Join~{VariationallyConstantQ->False};
 Options[CovDModificationsCPS]:=Options[DefCovD];
-Protect[DefMetric];
+Protect[DefCovD];
 
 xTension["xAct`xTensor`", DefCovD, "End"] := CovDModificationsCPS;
 
@@ -4040,7 +4026,7 @@ On[RuleDelayed::rhs]
 
 
 Unprotect[DefMetric];
-Options[DefMetric]=Options[DefMetric]~Join~{VariationallyConstantQ->False};
+Options[DefMetric]=DeleteCases[Options[DefMetric],(Rule|RuleDelayed)[VariationallyConstantQ,_]]~Join~{VariationallyConstantQ->False};
 Options[MetricModificationsCPS]:=Options[DefMetric];
 Protect[DefMetric];
 
@@ -4651,7 +4637,7 @@ LeibnizRule[dlfield_?VertExactHeadQ[inds1___],der_?CovDQ,option:OptionsPattern[O
 
 (* Different connection: ChangeCovD *)
 LeibnizRule[dlfield_,der1_?CovDQ,option:OptionsPattern[Options[LeibnizRule]]][expr:der2_?CovDQ[_][_],rest_]:=LeibnizRule[dlfield,der1,option][ChangeCovD[expr,der2,der1],rest]/;xAct`xTensor`Private`CompatibleCovDsQ[der1,der2]
-LeibnizRule[dlfield_,der_?CovDQ,option:OptionsPattern[Options[LeibnizRule]]][expr_Plus,rest_]:=LeibnizRule[dlfield,der,option]@@SplitByVertDeg[# rest]&/@expr
+LeibnizRule[dlfield_,der_?CovDQ,option:OptionsPattern[Options[LeibnizRule]]][expr_Plus,rest_]:=Plus@@(LeibnizRule[dlfield,der,option]@@@SplitByVertDeg[# rest])&/@expr
 
 
 (* ::Section:: *)
@@ -4737,7 +4723,7 @@ EOMOf1Form[wrt_?xTensorQ[inds___],der:(_?CovDQ|None):None][dlLagrangian_]:=Modul
 
     If[VertDeg@dlLagrangian=!=1,Throw@Message[EOMOf1Form::vertdeg]];
     If[xAct`xTensor`Private`SignedVBundleOfIndex/@{inds}=!=SlotsOfTensor@dlfield, (* Checks that the indices are correctly places (except for the inverse metric) *)
-       If[!($UseInverseMetric&&xAct`xTensor`Private`SignedVBundleOfIndex/@{inds}==-SlotsOfTensor@dlfield),Throw@Message[EOMOf1Form::wrongindices,{inds},MasterOf@dlfield]]];
+       If[!($UseInverseMetric&&xAct`xTensor`Private`SignedVBundleOfIndex/@{inds}===-SlotsOfTensor@dlfield),Throw@Message[EOMOf1Form::wrongindices,{inds},MasterOf@dlfield]]];
     
 	dlLagrangianPrepared = ReplaceDummies[dlLagrangian] // ExpandVertDiff[NonConstantTensors->MasterOf@dlfield,HoldExpandVertDiff->MasterOf@dlfield];
 	derAUX=If[der===None,FindCovDFromdlExpr[dlLagrangianPrepared,EOMOf1Form],der];	
@@ -4782,7 +4768,7 @@ Options[SymplecticCurrent]:=Options[SymplecticCurrentOf1Form];
 SymplecticCurrentOf1Form[option:OptionsPattern[Options[SymplecticCurrentOf1Form]]][dlLagrangian_]:=SymplecticCurrentOf1Form[All,None][dlLagrangian]
 SymplecticCurrentOf1Form[der:(_?CovDQ|None):None,option:OptionsPattern[Options[SymplecticCurrentOf1Form]]][dlLagrangian_]:=SymplecticCurrentOf1Form[All,der,option][dlLagrangian]
 SymplecticCurrentOf1Form[All,der:(_?CovDQ|None):None,option:OptionsPattern[Options[SymplecticCurrentOf1Form]]][dlLagrangian_]:=$SymplecticCurrentSign(VertDiff[SymplecticPotentialOf1Form[All,der][dlLagrangian]]//ExpandVertDiff[ConstantTensors->$NormalsOfCovD,HoldExpandVertDiff->OptionValue[HoldExpandVertDiff]])
-SymplecticCurrentOf1Form[wrt_,der:(_?CovDQ|None):None,option:OptionsPattern[Options[SymplecticCurrentOf1Form]]][dlLagrangian_]:=Module[{fields=Head/@DeleteDuplicatesTensors@(TensorWithIndices/@Flatten[{wrt}~Join~{OptionValue[HoldExpandVertDiff]}]),dlnormal=VertDiff[NormalOfCovD[der]]},
+SymplecticCurrentOf1Form[wrt_,der:(_?CovDQ|None):None,option:OptionsPattern[Options[SymplecticCurrentOf1Form]]][dlLagrangian_]:=Module[{fields=Head/@DeleteDuplicatesTensors@(TensorWithIndices/@Flatten[{wrt}~Join~{OptionValue[HoldExpandVertDiff]}])},
  ($SymplecticCurrentSign VertDiff[SymplecticPotentialOf1Form[wrt,der][dlLagrangian]]//ExpandVertDiff[NonConstantTensors->fields,HoldExpandVertDiff->fields])/.(VertDiff[#][_]->0&/@$NormalsOfCovD) (* der can be None *)
  ]
 
@@ -4842,7 +4828,7 @@ CurrentFromVector[vector_][wrt_,der:(_?CovDQ|None):None][Lagrangian_?LagrangianQ
   derAux=If[der===None,FindCovDFromdlExpr[VertDiff@Lagrangian//ExpandVertDiff[],FirstVariationOf1Form],der];	
 	
   normal=NormalOfCovD[derAux,index];
-  $NoetherCurrentSign(normal[-index]vector //ReplaceDummies)Lagrangian-VertInt[vvfLie][SymplecticPotential[fields,derAux][Lagrangian]]//ExpandVertInt[]
+  $NoetherCurrentSign ((normal[-index]vector //ReplaceDummies)Lagrangian-VertInt[vvfLie][SymplecticPotential[fields,derAux][Lagrangian]]//ExpandVertInt[])
 ]
 
 Protect[CurrentFromVector];
@@ -4854,7 +4840,7 @@ Protect[CurrentFromVector];
 
 Options[DivergenceQ]:={CheckZero->False}
 DivergenceQ::invalidCovDs="`1` is defined over `2` while `3` is defined over `4`. Define an auxiliary CovD over `2` with the option ExtendedFrom->`3`.";
-DivergenceQ::nonmetric="The connection `1` is not metric-compatible and the expression contains indices raised/lowered with a metric. The result are not be reliable. Consider using a frozen-metric or simplifying the expression to remove the non-frozen metric before calling DivergenceQ.";
+DivergenceQ::nonmetric="The connection `1` is not metric-compatible and the expression contains indices raised/lowered with a metric. The result may not be reliable. Consider using a frozen-metric or simplifying the expression to remove the non-frozen metric before calling DivergenceQ.";
 
 (* If only a metric CovD is provided, it finds its metric *)
 DivergenceQ[der_?CovDQ,option:OptionsPattern[Options[DivergenceQ]]][expr_?ScalarQ]/;MetricQ@MetricOfCovD@der:=DivergenceQ[{MetricOfCovD@der,der},der,option][expr]
@@ -5102,6 +5088,17 @@ EndPackage[]
 (** Fixed NormalOfCovD[PD] to throw an error when no manifold has been defined.*)
 (** Fixed incorrect handling of GGVFs in NoetherCurrent.*)
 (** Fixed edge case in ExpandVertDiff that led to an infinite recursion through SeparateMetric.*)
+(** [audit/xcps-fixes] ExpandVertDiff[SeparateMetric->False] returned Null (missing else branch); a SameQ test now precedes the Simplification call.*)
+(** [audit/xcps-fixes] LeibnizRule on a sum (ChangeCovD path) applied @@ to the list of pairs returned by SplitByVertDeg; Lagrangians written with a CovD different from the integration CovD gave a zero SymplecticPotential and wrong EOM.*)
+(** [audit/xcps-fixes] ContractMetric over WWedge[expr2__, der[expr1]] produced a malformed ContractMetric1 call (misplaced bracket).*)
+(** [audit/xcps-fixes] AddVariationalRelation between two exact forms called AddVariationalRelation with two arguments instead of a rule.*)
+(** [audit/xcps-fixes] CurrentFromVector applied $NoetherCurrentSign only to the first term.*)
+(** [audit/xcps-fixes] ExpandVertDiff options (e.g. ExpandVertDiffCovD) are propagated through FilterVertExpand into the expansion rules.*)
+(** [audit/xcps-fixes] Grade and DefCovD were left unprotected (stray backspace escape; Protect[DefMetric] instead of Protect[DefCovD]); AChristoffel was left unprotected after defining double AChristoffel tensors.*)
+(** [audit/xcps-fixes] Removed the duplicated definition of delta with Dir (old 2.3.5), which returned the bare vector when the Dir argument did not have exactly one free index.*)
+(** [audit/xcps-fixes] Equality of GVVFs and Expand inside total derivatives use UpValues instead of DownValues of System`SameQ, System`Equal and System`Expand.*)
+(** [audit/xcps-fixes] Reloading the package no longer duplicates options of DefTensor/DefCovD/DefMetric nor the rules added to ToCanonical, ContractMetric and SeparateMetric.*)
+(** [audit/xcps-fixes] Minor: Directed->"outwards", TotalDerivativeOfCovD[PD] without manifolds, === in the EOMOf1Form index check, Block for internal flags, dead code removed, typos in usage messages.*)
 (**)
 (*### Enhancements ###*)
 (** Simplified DivergenceQ (optional functions no longer allowed) by extending ToCanonical, ContractMetric, and ScreenDollarIndices to act over And[expr1,expr2].*)
@@ -5116,7 +5113,7 @@ EndPackage[]
 (** Improved the documentation for NoetherSymmetryQ.*)
 (** Added ExpandVertDiffRule of Extrinsic, normal and Acceleration.*)
 (** Added VertDeg of Projectormetric.*)
-(** Added ExpanVertDiff of equalities.*)
+(** Added ExpandVertDiff of equalities.*)
 (**)
 (*### Refactoring ###*)
 (** Changed some == comparisons to === for robustness.*)
